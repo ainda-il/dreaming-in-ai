@@ -1,4 +1,6 @@
-export default async function handler(req, res) {
+// api/oracle.js — CommonJS (compatível com Vercel)
+
+module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -14,7 +16,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 🔑 Ler o body manualmente
+    // Ler body manualmente
     const buffers = [];
     for await (const chunk of req) {
       buffers.push(chunk);
@@ -22,8 +24,6 @@ export default async function handler(req, res) {
 
     const rawBody = Buffer.concat(buffers).toString();
     const body = JSON.parse(rawBody);
-
-    console.log("Body recebido:", body);
 
     const response = await fetch(
       "https://api.openai.com/v1/chat/completions",
@@ -47,15 +47,11 @@ export default async function handler(req, res) {
 
     return res.status(200).json(data);
 
-} catch (error) {
-  console.error("ERRO COMPLETO:", error);
+  } catch (error) {
+    console.error("Erro no oráculo:", error);
 
-  return res.status(500).json({
-    choices: [{
-      message: {
-        content: "Erro técnico. Ver logs do Vercel."
-      }
-    }],
-    error: String(error)
-  });
-}
+    return res.status(500).json({
+      choices: [{ message: { content: "A boca falhou em falar." } }]
+    });
+  }
+};
