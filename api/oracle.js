@@ -47,11 +47,15 @@ export default async function handler(req, res) {
 
     return res.status(200).json(data);
 
-  } catch (error) {
-    console.error("Erro no oráculo:", error);
+} catch (error) {
+  console.error("ERRO COMPLETO:", error);
 
-    return res.status(500).json({
-      choices: [{ message: { content: "A boca falhou em falar." } }]
-    });
-  }
+  return res.status(500).json({
+    choices: [{
+      message: {
+        content: "Erro técnico. Ver logs do Vercel."
+      }
+    }],
+    error: String(error)
+  });
 }
