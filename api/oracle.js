@@ -1,4 +1,6 @@
+// api/oracle.js
 export default async function handler(req, res) {
+  // Configura CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -7,18 +9,50 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const response = await fetch(
-    "https://api.openai.com/v1/chat/completions",
-    {
+  // Verifica se temos corpo
+  if (!req.body) {
+    return res.status(400).json({ error: "Corpo vazio" });
+  }
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify(req.body)
-    }
-  );
+    });
 
-  const data = await response.json();
-  res.status(200).json(data);
+    const data = await response.json();
+
+    // Se não vier choices, devolve mensagem padrão
+    if (!data.choices || data.choices.length === 0) {
+      return res.status(200).json({
+        choices: [
+          {
+            message: {
+              content: "A boca fechou-se."
+            }
+          }
+        ]
+      });
+    }
+
+    // Tudo certo: devolve o resultado
+    res.status(200).json(data);
+
+  } catch (error) {
+    console.error("Erro no oracle:", error);
+    // Retorna mensagem amigável
+    res.status(500).json({
+      choices: [
+        {
+          message: {
+            content: "A boca falhou em falar."
+          }
+        }
+      ]
+    });
+  }
 }
