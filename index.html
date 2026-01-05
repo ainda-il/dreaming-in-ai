@@ -86,7 +86,7 @@ document.getElementById("offer").addEventListener("click", async () => {
   answer.innerText = "A boca mastiga o sonho…";
 
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://dreaming-in-ai.vercel.app/api/oracle", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
