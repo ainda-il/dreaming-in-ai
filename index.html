@@ -1,0 +1,81 @@
+<div class="container">
+  <p>Introduz o sonho na boca.</p>
+  <textarea id="dream"></textarea>
+  <button id="offer">Oferecer</button>
+  <div id="answer"></div>
+</div>
+
+body {
+  background: #111;
+  color: #eee;
+  font-family: serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  width: 500px;
+  text-align: center;
+}
+
+textarea {
+  width: 100%;
+  height: 140px;
+  background: transparent;
+  color: #eee;
+  border: 1px solid #444;
+  padding: 10px;
+}
+
+button {
+  margin-top: 20px;
+  background: none;
+  border: 1px solid #666;
+  color: #eee;
+  padding: 10px;
+}
+
+#answer {
+  margin-top: 30px;
+  line-height: 1.6;
+}
+
+
+document.getElementById("offer").onclick = async () => {
+  const dream = document.getElementById("dream").value;
+  const answer = document.getElementById("answer");
+
+  answer.innerHTML = "A boca mastiga o sonho…";
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer A_TUA_API_KEY"
+    },
+    body: JSON.stringify({
+      model: "gpt-4.1-mini",
+      messages: [
+        {
+          role: "system",
+          content: `
+És a Bocca Verità.
+Não explicas sonhos.
+Falas como uma boca antiga de pedra.
+Respondes em fragmentos.
+Às vezes recusas responder.
+          `
+        },
+        {
+          role: "user",
+          content: dream
+        }
+      ]
+    })
+  });
+
+  const data = await response.json();
+  answer.innerHTML = data.choices[0].message.content;
+};
