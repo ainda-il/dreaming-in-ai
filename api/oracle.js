@@ -1,4 +1,7 @@
-// api/oracle.js — CommonJS (compatível com Vercel)
+// api/oracle.js — versão final robusta para Vercel
+
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
